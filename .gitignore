@@ -147,3 +147,22 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# --- Chatterbox additions ---
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Local data and secrets
+postgres-data/
+pgdata/
+*.pem
+*.key
+*.sqlite
+
+# Test output
+playwright-report/
+test-results/
