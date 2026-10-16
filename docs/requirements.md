@@ -93,6 +93,11 @@ Chatterbox is a lightweight social feed. Visitors can read a shared feed. Regist
 - **NFR-R2** Services shall wait for database readiness before serving traffic.
 - **NFR-R3** Migrations and persistence shall be verified as part of release testing.
 
+### Extensibility
+- **NFR-X1** The design shall allow the out-of-scope features in section 7 to be added later through new migrations and routes, without changing the meaning of existing tables or endpoints. (Checked by design review in S1-3 and S1-5.)
+- **NFR-X2** The API shall keep no session state in process memory, so that it can later run as multiple instances. (Verified by the session-persistence-after-restart test in S3-2.)
+- **NFR-X3** List endpoints shall return an object containing the list (for example `{ "posts": [...] }`), not a bare array, so that pagination can be added without breaking clients. (Checked in S1-2.)
+
 ## 6. In scope
 Registration, login/logout, shared feed, text posts, author and date display, PostgreSQL persistence, Docker-based local run, automated tests, GitHub Actions CI, project documentation.
 
