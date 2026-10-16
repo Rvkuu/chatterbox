@@ -140,13 +140,12 @@ All variables come from `.env.example`: the PostgreSQL credentials, `DATABASE_UR
 
 ## 11. Decisions made, and decisions deferred
 
-Made: see the [ADR index](adr/README.md).
+Made: see the [ADR index](adr/README.md). The Node.js version and the package manager and workspaces setup are decided in [ADR-0008](adr/0008-npm-workspaces-and-node-24.md).
 
 Deferred to the stage that has the information to decide:
 
 | Decision | Stage |
 |---|---|
-| Node.js version and package manager or workspaces setup | 2 |
 | Exact folder layout of both apps | 2 |
 | End-to-end test tool | 7 (S7-1) |
 | Session pruning interval | 3 (S3-2) |

@@ -13,6 +13,7 @@ An ADR records one significant technical decision: the situation, what was chose
 | [0005](0005-prisma-and-migrations.md) | Prisma ORM with version-controlled migrations | Accepted |
 | [0006](0006-single-origin-api-proxy.md) | One browser-facing origin with an `/api` proxy | Accepted |
 | [0007](0007-layered-csrf-protection.md) | Layered CSRF protection with a session token | Accepted |
+| [0008](0008-npm-workspaces-and-node-24.md) | npm workspaces and Node.js 24 | Accepted |
 
 ## Statuses
 
