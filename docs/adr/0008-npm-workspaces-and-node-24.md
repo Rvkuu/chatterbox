@@ -26,7 +26,8 @@ The exact files and scripts are created in S2-1 and S2-2.
 ## Consequences
 - One `npm ci` at the root installs everything, and CI needs only one install step.
 - Docker builds use the repository root as their build context so that they can see the root lockfile. The Dockerfiles copy the root and per-app `package.json` files first, for layer caching, and install one workspace at a time.
-- npm moves shared packages to the root `node_modules`, which can hide a missing dependency in an app's own `package.json`. An ESLint rule (`import/no-extraneous-dependencies`) is added to catch it.
-- The location of Prisma's generated client interacts with this hoisting. It works, and is verified in S2-1 and S2-3 and not assumed.
+- npm moves shared packages to the root `node_modules`, which can hide a missing dependency in an app's own `package.json`. An ESLint rule (`import-x/no-extraneous-dependencies`, from `eslint-plugin-import-x`, the maintained fork of `eslint-plugin-import` that supports current ESLint) catches it.
+- The location of Prisma's generated client interacts with this hoisting. It works, and is verified when Prisma is added in S3-1, not assumed.
+- Newer npm versions (seen with 11.21) warn about dependency install scripts that have not been approved, but still run them. If a later npm version blocks them, packages such as Prisma, argon2 and esbuild are approved with `npm install-scripts approve`, which records the approval in `package.json`.
 - The decision is reversible. Moving to independent packages or pnpm later changes the lockfiles, the Dockerfiles and the CI install steps, not the application code.
 - Revisit this ADR before 2028-04-30, when Node 24 reaches end of life.

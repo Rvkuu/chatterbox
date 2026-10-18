@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+package-lock.json
+
+# Documentation and templates are written by hand
+docs
+*.md
+
+# Local configuration
+.env
+.env.*

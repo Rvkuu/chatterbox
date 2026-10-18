@@ -2,7 +2,7 @@
 
 A lightweight social media MVP: register, log in, post short text messages, and read a shared feed (newest first).
 
-> **Status:** planning is complete (Stages 0 and 1), and the application is being built in stages. Stage 2 (scaffolding and CI) is under way. **There is nothing to run yet.** Run instructions are added only for files that exist.
+> **Status:** planning is complete (Stages 0 and 1), and the application is being built in stages. Stage 2 (scaffolding and CI) is under way. **Only a skeleton of the API exists so far**: it answers a health check and nothing else. The web app, database and Docker setup are still to come. Run instructions are added only for files that exist.
 
 ## Documentation
 
@@ -35,10 +35,12 @@ The project was set up with Node 24.21.0, npm 11.19.0, Docker 29.8.1, Docker Com
 ## Repository layout
 
 ```
-apps/web/      React frontend (Stage 2)
-apps/api/      Express REST API (Stage 2)
+apps/web/      React frontend (not started)
+apps/api/      Express REST API (health check only so far)
 docs/          Requirements, architecture, ADRs, workflow
 .github/       CI workflows and issue/PR templates
+package.json   npm workspaces and the shared scripts
+.nvmrc         The Node.js version (24)
 ```
 
 ## Configuration
@@ -48,6 +50,33 @@ Copy the example file and edit it. Never commit `.env`.
 ```bash
 cp .env.example .env
 ```
+
+## Development
+
+Use Node 24 (see `.nvmrc`). Other major versions are refused on purpose.
+
+```bash
+npm ci                     # install exactly what package-lock.json lists
+npm run check              # lint, format check, type check, tests and build
+npm run dev -w apps/api    # start the API with auto-reload
+```
+
+With the API running, open http://127.0.0.1:4000/api/health. It should show `{"status":"ok"}`. The health check does not look at the database yet.
+
+| Command | What it does |
+|---|---|
+| `npm run lint` | ESLint over the whole repository |
+| `npm run format` / `npm run format:check` | Prettier: fix files / only check them |
+| `npm run typecheck` | TypeScript type check in every app |
+| `npm test` | Run the tests in every app |
+| `npm run build` | Build every app |
+| `npm run check` | All of the above, in order |
+| `npm run dev -w apps/api` | Start the API with auto-reload |
+| `npm run build -w apps/api` then `npm start -w apps/api` | Run the built API |
+
+Messages you may see and can ignore:
+- `npm warn install-scripts ...`: newer npm versions list dependency install scripts that are not approved yet. The scripts still run.
+- `../../.env not found. Continuing without it.`: you have not created a `.env` file. The defaults work.
 
 ## Progress
 
