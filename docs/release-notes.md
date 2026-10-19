@@ -99,7 +99,7 @@ Also worth knowing:
 ## 6. Not verified
 
 - **Windows and Docker Desktop** (the developer's machine): the results above are from Linux and from GitHub Actions. On the developer's Windows machine the API tests cannot start, because Smart App Control blocks Prisma's unsigned migration helper (`schema-engine-windows.exe`). Lint, type check, the web tests and the Docker stack work there. See the README, "Running the tests".
-- **GitHub Actions, partly:** all CI runs on 2026-10-19 passed, and the last one on `main` (run 6) passed all four jobs: checks, end-to-end tests, the Docker stack and the dependency audit. What has **not** been seen is a deliberately failing check turning a run red (the last acceptance criterion of S2-4).
+- **GitHub Actions:** every CI run on `main` and on the feature branch passed all four jobs: checks, end-to-end tests, the Docker stack and the dependency audit. A deliberately broken web test, pushed on a throwaway branch (run 9, since deleted), turned the "Lint, type check, test and build" job red while the other three stayed green, which was the last acceptance criterion of S2-4.
 - A real **HTTPS** deployment, browsers other than Chromium, load behaviour, and third-party penetration testing.
 
 ## 7. Problems found and fixed during the build

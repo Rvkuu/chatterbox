@@ -2,7 +2,7 @@
 
 A lightweight social media MVP: register, log in, post short text messages, and read a shared feed (newest first).
 
-> **Status:** all stages (0 to 7) are built. What was verified, with the actual results, and what has **not** been verified yet (notably a run of the GitHub Actions workflow on GitHub, and a run on Windows) are in the [release notes](docs/release-notes.md). The [demo script](docs/demo-script.md) is a ten-minute walk through the whole application.
+> **Status:** all stages (0 to 7) are built. What was verified, with the actual results, and what has **not** been verified yet (notably a run on Windows, where the API tests are blocked by Smart App Control on the author's machine) are in the [release notes](docs/release-notes.md). The [demo script](docs/demo-script.md) is a ten-minute walk through the whole application.
 
 ## Documentation
 
