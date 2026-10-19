@@ -1,6 +1,6 @@
-import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { migrateDeploy } from './prisma.js';
 
 const apiDir = resolve(import.meta.dirname, '../..');
 
@@ -25,20 +25,20 @@ export function setup(): void {
   }
 
   try {
-    execFileSync('npx', ['prisma', 'migrate', 'deploy'], {
-      cwd: apiDir,
-      env: { ...process.env, DATABASE_URL: url },
-      stdio: 'pipe',
-      encoding: 'utf8',
-    });
+    migrateDeploy(url);
   } catch (err) {
-    // Say what to do in one plain message. The connection string is not printed, because it
-    // contains the password.
+    // Say what is wrong in plain words. The connection string is not printed, because it contains
+    // the password.
     const { hostname, port } = new URL(url);
-    throw new Error(
-      `Could not prepare the test database at ${hostname}:${port}. Is PostgreSQL running? ` +
-        'Start it with "npm run db:up" (see "Running the tests" in the README).',
-      { cause: err },
-    );
+    const stderr = (err as { stderr?: string }).stderr ?? '';
+    const reason = stderr.includes('P1001')
+      ? `PostgreSQL did not answer at ${hostname}:${port}. Is it running? Start it with "npm run db:up" (see "Running the tests" in the README).`
+      : `The migrations could not be applied to the test database at ${hostname}:${port}: ${(
+          stderr.trim() || (err instanceof Error ? err.message : String(err))
+        )
+          .split('\n')
+          .slice(-3)
+          .join(' ')}`;
+    throw new Error(reason, { cause: err });
   }
 }

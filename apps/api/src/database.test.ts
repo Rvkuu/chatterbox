@@ -1,17 +1,8 @@
-import { execFileSync } from 'node:child_process';
-import { resolve } from 'node:path';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createTestApp, resetDatabase, testDatabaseUrl, type TestApp } from './test/helpers.js';
+import { migrateDeploy } from './test/prisma.js';
 
-const apiDir = resolve(import.meta.dirname, '..');
-
-function deployMigrations(): string {
-  return execFileSync('npx', ['prisma', 'migrate', 'deploy'], {
-    cwd: apiDir,
-    env: { ...process.env, DATABASE_URL: testDatabaseUrl() },
-    encoding: 'utf8',
-  });
-}
+const deployMigrations = (): string => migrateDeploy(testDatabaseUrl());
 
 describe('database schema', () => {
   let t: TestApp;
