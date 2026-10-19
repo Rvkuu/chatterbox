@@ -3,6 +3,7 @@ import { loadConfig, type Config } from '../config.js';
 import { createDb, createPool, type Db } from '../db.js';
 import { createApp } from '../app.js';
 import type { Logger } from '../logger.js';
+import type { PasswordHasher } from '../services/passwords.js';
 
 export function testDatabaseUrl(): string {
   const url = process.env.TEST_DATABASE_URL;
@@ -48,12 +49,15 @@ export interface TestApp {
 }
 
 // A fresh app with its own connection pool. Creating a second one models an API restart.
-export function createTestApp(overrides: Record<string, string> = {}): TestApp {
+export function createTestApp(
+  overrides: Record<string, string> = {},
+  hasher?: PasswordHasher,
+): TestApp {
   const config = testConfig(overrides);
   const pool = createPool(config.databaseUrl);
   const db = createDb(pool);
   const logs = captureLogs();
-  const app = createApp({ config, db, pool, logger: logs.logger });
+  const app = createApp({ config, db, pool, logger: logs.logger, ...(hasher ? { hasher } : {}) });
   return {
     app,
     db,

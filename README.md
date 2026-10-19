@@ -2,7 +2,7 @@
 
 A lightweight social media MVP: register, log in, post short text messages, and read a shared feed (newest first).
 
-> **Status:** planning is complete (Stages 0 and 1), and the application is being built in stages. Stage 2 (scaffolding and CI) is under way. **Only skeletons of the API and the web app exist so far**: the API answers a health check, and the web page shows whether it can reach the API. Docker Compose starts both together with PostgreSQL, and the API checks the database and keeps sessions in it. Run instructions are added only for files that exist.
+> **Status:** planning is complete (Stages 0 and 1), and the application is being built in stages. Stage 2 (scaffolding and CI) is under way. **Only skeletons of the API and the web app exist so far**: the API handles registration, login and logout, and the web app has the register, login and logout screens. Docker Compose starts both together with PostgreSQL, and the API checks the database and keeps sessions in it. Run instructions are added only for files that exist.
 
 ## Documentation
 
@@ -35,8 +35,8 @@ The project was set up with Node 24.21.0, npm 11.19.0, Docker 29.8.1, Docker Com
 ## Repository layout
 
 ```
-apps/web/            React frontend (a page that shows the API status so far)
-apps/api/            Express REST API (health check and sessions so far)
+apps/web/            React frontend (register, login and logout so far)
+apps/api/            Express REST API (health, sessions, register, login, logout)
 docs/                Requirements, architecture, ADRs, workflow
 .github/             CI workflows and issue/PR templates
 docker-compose.yml   The web, api and database containers

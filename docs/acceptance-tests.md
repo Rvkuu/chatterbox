@@ -7,7 +7,7 @@ Status: Draft for review · Defines **what must be true** for each requirement i
 Each scenario is a short *Given / When / Then* statement. It says what the starting situation is, what happens, and what must be observed. Scenarios are written to be implemented as automated tests at the layers shown, so the same behaviour is checked as cheaply as possible and again end to end where it matters.
 
 - **Scenario IDs** look like `AT-R1`. The letter is the group (R registration, L login, O logout, F feed, P posts, D data and operations, S security, J journeys).
-- **Test names must start with the scenario ID**, for example `it("AT-R1: registers a new account")`. That lets a script confirm that every scenario has a test. Tests that check project scaffolding and belong to no scenario start with `scaffold:` instead.
+- **Test names must start with the scenario ID**, for example `it("AT-R1: registers a new account")`. That lets a script confirm that every scenario has a test. Tests that check project scaffolding and belong to no scenario start with `scaffold:` instead, and extra checks of documented behaviour that no scenario covers start with `extra:`.
 - Security test cases `SEC-T1` to `SEC-T14` are defined in [security.md](security.md) section 13 and are part of this acceptance suite. They appear in the traceability matrix.
 - Non-functional requirements that are checked by a review or a CI result, not a test case, are listed as `NC1` to `NC9` in section 5.
 
