@@ -151,6 +151,8 @@ npm run check      # lint, format check, type check, tests and build
 
 The tests use their own database, `chatterbox_test`, on the same PostgreSQL. It is created and migrated automatically from the real migrations, and its tables are emptied between tests, so your development data is never touched. Its address is `TEST_DATABASE_URL` in `.env`, and the database name must end in `_test`. In CI the same variable points at the workflow's PostgreSQL service.
 
+**Windows with Smart App Control:** Smart App Control can block Prisma's migration helper program (`schema-engine-windows.exe`, which is unsigned), and then the **API tests cannot start** on that machine. You can confirm it in the Windows Code Integrity log (`Get-WinEvent -LogName "Microsoft-Windows-CodeIntegrity/Operational"`), which reports that the file "did not meet the Enterprise signing level requirements". Lint, the format check, the type check, the web tests and the build are not affected, and neither is the Docker stack, because Prisma runs inside Linux there. On such a machine the API tests run in GitHub Actions instead (see [Continuous integration](#continuous-integration)), which is the reference result for the full suite. Running them in WSL2 also works. Turning Smart App Control off would too, but Windows cannot turn it back on without being reset or reinstalled.
+
 The end-to-end tests drive a real browser against the Docker stack. See [End-to-end tests](#end-to-end-tests).
 
 ### Commands
@@ -218,7 +220,7 @@ package.json         npm workspaces and the shared scripts
 
 ## Continuous integration
 
-`.github/workflows/ci.yml` runs on every push and pull request: lint, format check, type check, tests (twice, to show they do not depend on leftover state) and build with a PostgreSQL service container; a job that builds the Docker stack, starts it and checks it through the proxy; and `npm audit`.
+`.github/workflows/ci.yml` runs on every push and pull request: lint, format check, type check, tests (twice, to show they do not depend on leftover state) and build with a PostgreSQL service container; a job that builds the Docker stack, starts it and checks it through the proxy; and `npm audit`; plus a job that runs the end-to-end tests. Every job runs on Linux, so this is the reference result for the full test suite, including on machines where the API tests cannot run locally (see "Running the tests").
 
 ## Known limitations
 
