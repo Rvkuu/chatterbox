@@ -1,30 +1,73 @@
-import { useEffect, useState } from 'react';
-import { fetchHealth } from './api';
+import { useState } from 'react';
+import { AuthProvider, useAuth } from './auth/AuthContext';
+import { ApiStatus } from './components/ApiStatus';
+import { Feed } from './components/Feed';
+import { Header } from './components/Header';
+import { LoginForm } from './components/LoginForm';
+import { RegisterForm } from './components/RegisterForm';
 
-type ApiStatus = 'checking' | 'ok' | 'unreachable';
+type View = 'home' | 'login' | 'register';
 
-export function App() {
-  const [status, setStatus] = useState<ApiStatus>('checking');
+function Shell() {
+  const { state } = useAuth();
+  const [view, setView] = useState<View>('home');
+  const [notice, setNotice] = useState<string | undefined>();
+  const [email, setEmail] = useState<string | undefined>();
 
-  useEffect(() => {
-    // If the component goes away before the answer arrives, do not update it.
-    let cancelled = false;
-    fetchHealth()
-      .then(() => {
-        if (!cancelled) setStatus('ok');
-      })
-      .catch(() => {
-        if (!cancelled) setStatus('unreachable');
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const showLogin = () => {
+    setNotice(undefined);
+    setView('login');
+  };
+  const showRegister = () => setView('register');
+  const showHome = () => setView('home');
+
+  // A logged-in user has no reason to see the login or register forms.
+  const current: View = state.status === 'authenticated' ? 'home' : view;
 
   return (
-    <main>
-      <h1>Chatterbox</h1>
-      <p>API status: {status}</p>
-    </main>
+    <>
+      <Header onShowLogin={showLogin} onShowRegister={showRegister} onShowHome={showHome} />
+      <main>
+        {current === 'login' ? (
+          <LoginForm
+            notice={notice}
+            defaultEmail={email}
+            onLoggedIn={showHome}
+            onShowRegister={showRegister}
+          />
+        ) : null}
+        {current === 'register' ? (
+          <RegisterForm
+            onRegistered={(registeredEmail) => {
+              // Registering does not log in, so the next step is the login form (docs/api.md).
+              setEmail(registeredEmail);
+              setNotice('Account created. Please log in.');
+              setView('login');
+            }}
+            onShowLogin={showLogin}
+          />
+        ) : null}
+        {current === 'home' ? (
+          <Feed
+            onSessionExpired={() => {
+              // The server no longer knows this session (it expired), so ask the user to log in.
+              setNotice('Your session has expired. Please log in again.');
+              setView('login');
+            }}
+          />
+        ) : null}
+      </main>
+      <footer>
+        <ApiStatus />
+      </footer>
+    </>
+  );
+}
+
+export function App() {
+  return (
+    <AuthProvider>
+      <Shell />
+    </AuthProvider>
   );
 }

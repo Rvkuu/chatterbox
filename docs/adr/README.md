@@ -14,6 +14,9 @@ An ADR records one significant technical decision: the situation, what was chose
 | [0006](0006-single-origin-api-proxy.md) | One browser-facing origin with an `/api` proxy | Accepted |
 | [0007](0007-layered-csrf-protection.md) | Layered CSRF protection with a session token | Accepted |
 | [0008](0008-npm-workspaces-and-node-24.md) | npm workspaces and Node.js 24 | Accepted |
+| [0009](0009-configurable-secure-cookie-flag.md) | The Secure cookie flag is configurable, and off for the HTTP demo | Accepted |
+| [0010](0010-prisma-7-driver-adapter.md) | Prisma 7 with the pg driver adapter and a generated client in the API source | Accepted |
+| [0011](0011-playwright-end-to-end-tests.md) | Playwright end-to-end tests against a private Docker stack | Accepted |
 
 ## Statuses
 

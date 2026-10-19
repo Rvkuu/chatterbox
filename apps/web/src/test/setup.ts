@@ -1,8 +1,11 @@
 import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
-import { afterEach } from 'vitest';
+import { afterEach, vi } from 'vitest';
+import { resetCsrfToken } from '../api/client';
 
-// With Vitest's globals switched off, Testing Library cannot clean up by itself.
 afterEach(() => {
   cleanup();
+  vi.unstubAllGlobals();
+  // The client keeps the CSRF token in memory, so every test starts without one.
+  resetCsrfToken();
 });

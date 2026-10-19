@@ -7,7 +7,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  globalIgnores(['**/dist/**', '**/coverage/**', '**/node_modules/**']),
+  globalIgnores(['**/dist/**', '**/coverage/**', '**/node_modules/**', '**/generated/**']),
 
   js.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
@@ -25,6 +25,18 @@ export default defineConfig([
   {
     files: ['**/*.js', '**/*.mjs'],
     extends: [tseslint.configs.disableTypeChecked],
+  },
+
+  // Test code reads untyped JSON from HTTP responses on purpose: that is what a client sees.
+  {
+    files: ['**/*.test.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-return': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+    },
   },
 
   // The web app is React: check the rules of hooks.
@@ -45,6 +57,8 @@ export default defineConfig([
             '**/*.test.{ts,tsx}',
             '**/src/test/**',
             '**/vitest.config.ts',
+            '**/prisma.config.ts',
+            'apps/e2e/**',
             '**/vite.config.ts',
             '**/eslint.config.js',
           ],
