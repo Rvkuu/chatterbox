@@ -115,7 +115,15 @@ Prisma issues this through its client; the SQL is shown only to document the acc
 | Hand-written SQL | Allowed inside a migration for things Prisma cannot model (the `CHECK` constraint in 4.2). Mark these with a comment |
 | Review | Every migration is read in its PR, since it is the only record of what happened to the data |
 
-The commands above are the standard Prisma ones. The exact `package.json` scripts that wrap them are defined in Stage 3 and will be documented in the README then.
+The scripts that wrap them are in `apps/api/package.json`:
+
+| Script (run from the repository root) | What it does |
+|---|---|
+| `npm run db:generate -w apps/api` | Generate the Prisma client. The test, build, type check and dev scripts do this first |
+| `npm run db:migrate -w apps/api` | `prisma migrate deploy` against `DATABASE_URL` |
+| `npm run db:migrate:dev -w apps/api -- --name <description>` | `prisma migrate dev`, for a local scratch database only |
+
+The tests build their own database (`TEST_DATABASE_URL`, whose name must end in `_test`) from the same migrations, so the test schema cannot drift from the real one. Prisma 7 specifics are in ADR-0010.
 
 ## 7. Persistence and Docker
 

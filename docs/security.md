@@ -62,7 +62,7 @@ flowchart LR
 | Login | Validate input, verify the password (section 4), then **regenerate the session**: the old session is deleted and a new one with a new ID is created holding the user ID and a new CSRF token, with a 7-day lifetime (FR-02.2, FR-02.3). The client fetches the new token afterwards |
 | Authenticated request | The signed cookie identifies the session in PostgreSQL and the user ID comes from it, never from the request body |
 | Logout | The session is destroyed in PostgreSQL and the cookie is cleared, so the old cookie authorises nothing (FR-03.2, FR-03.3) |
-| Expiry | The store deletes expired rows periodically. The interval is chosen in S3-2 |
+| Expiry | The store deletes expired rows every 15 minutes (chosen in S3-2). Expired rows are never honoured in between, because the store ignores any row past its `expire` time |
 
 ```mermaid
 sequenceDiagram

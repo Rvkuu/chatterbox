@@ -1,0 +1,46 @@
+// Schema from docs/database.md. Migrations in prisma/migrations/ are the source of truth for the
+// database; never edit one after it has been merged.
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String   @unique @db.VarChar(254)
+  username     String   @db.VarChar(30)
+  usernameKey  String   @unique @db.VarChar(30)
+  passwordHash String
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+  posts        Post[]
+
+  @@map("users")
+}
+
+model Post {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  authorId  String   @db.Uuid
+  content   String   @db.VarChar(280)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([createdAt(sort: Desc), id(sort: Desc)], map: "posts_feed_idx")
+  @@index([authorId], map: "posts_authorId_idx")
+  @@map("posts")
+}
+
+// Owned by connect-pg-simple (the session store). The layout is dictated by that library.
+model Session {
+  sid    String   @id @db.VarChar
+  sess   Json     @db.Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "session_expire_idx")
+  @@map("session")
+}

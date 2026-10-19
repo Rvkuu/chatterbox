@@ -6,17 +6,36 @@
   "description": "Chatterbox REST API",
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=../../.env src/server.ts",
+    "predev": "npm run db:generate",
     "build": "tsc -p tsconfig.build.json",
+    "prebuild": "npm run db:generate",
     "start": "node --env-file-if-exists=../../.env dist/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run"
+    "pretypecheck": "npm run db:generate",
+    "test": "vitest run",
+    "pretest": "npm run db:generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev"
   },
   "dependencies": {
-    "express": "5.3.0"
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "argon2": "0.45.1",
+    "connect-pg-simple": "10.0.0",
+    "express": "5.3.0",
+    "express-session": "1.19.0",
+    "helmet": "8.3.0",
+    "pg": "8.23.1",
+    "prisma": "7.10.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
+    "@types/connect-pg-simple": "7.0.3",
     "@types/express": "5.0.6",
+    "@types/express-session": "1.19.0",
     "@types/node": "24.19.2",
+    "@types/pg": "8.23.1",
     "@types/supertest": "7.2.1",
     "supertest": "7.3.1",
     "tsx": "4.23.15",
