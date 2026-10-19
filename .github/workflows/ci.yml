@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, type check, test and build
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ci -d ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # Tests use their own database on the service container. Nothing here is a real secret.
+      TEST_DATABASE_URL: postgresql://ci:ci-only-password@localhost:5432/chatterbox_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run typecheck
+      - run: npm test
+      # NC4: the suites must pass twice in a row, which shows they do not depend on leftover state.
+      - name: Tests again (repeatability)
+        run: npm test
+      - run: npm run build
+
+  docker:
+    name: Docker Compose stack starts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create .env with a generated secret
+        run: |
+          cp .env.example .env
+          sed -i "s/^SESSION_SECRET=.*/SESSION_SECRET=$(openssl rand -hex 32)/" .env
+      - run: docker compose config -q
+      - name: Build and start, waiting for health checks
+        run: docker compose up -d --build --wait
+      - name: Check the web app and the API through the proxy
+        run: |
+          curl -fsS http://localhost:8080/ > /dev/null
+          curl -fsS http://localhost:8080/api/health
+      - name: Show logs if something failed
+        if: failure()
+        run: docker compose logs --no-color
+      - name: Stop and delete the test stack
+        if: always()
+        run: docker compose down -v
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Findings are triaged in S7-2. High and critical findings fail the run.
+      - run: npm audit --audit-level=high
