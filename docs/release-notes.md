@@ -41,10 +41,10 @@ The tests are named after the scenarios in [acceptance-tests.md](acceptance-test
 
 | Check | Status |
 |---|---|
-| NC1 Lint, format and type check pass (NFR-M1) | Passed locally and in the clean clone. The CI workflow runs the same commands. It has **not yet been run on GitHub** |
+| NC1 Lint, format and type check pass (NFR-M1) | Passed locally and in the clean clone, and in GitHub Actions: all four jobs of the CI run on `main` after PR #39 (run 6, 2026-10-19) passed |
 | NC2 ADRs index every significant decision (NFR-M2) | 11 ADRs indexed in `docs/adr/README.md`; ADRs 0009 to 0011 were added during the build |
 | NC3 Unit, integration, frontend and end-to-end suites exist and run (NFR-T1) | Yes: all four ran |
-| NC4 Tests pass twice in a row with no leftover state (NFR-T2) | Passed twice locally. On a CI runner: not yet run |
+| NC4 Tests pass twice in a row with no leftover state (NFR-T2) | Passed twice locally, and on a CI runner: the CI job runs the suite twice in a row and both passed |
 | NC5 The README commands start the full stack on a clean clone (NFR-P1) | Passed on Linux. Not run on Windows |
 | NC6 No hard-coded ports, URLs or credentials; `.env.example` lists every variable (NFR-P2) | Passed (`check-config`) |
 | NC7 The schema matches `database.md` and is not shaped around out-of-scope features (NFR-X1) | The generated migration was read against the document: tables, unique indexes, the feed index, `ON DELETE RESTRICT` and the blank-content check all match |
@@ -98,8 +98,8 @@ Also worth knowing:
 
 ## 6. Not verified
 
-- **Windows and Docker Desktop** (the developer's machine): all results are from Linux.
-- **GitHub Actions:** the workflow passes `actionlint` and every command in it was run locally, but no run on GitHub has been seen. The S2-4 acceptance criteria (a green run, and a deliberately failing check turning it red) are still open until the first push is observed.
+- **Windows and Docker Desktop** (the developer's machine): the results above are from Linux and from GitHub Actions. On the developer's Windows machine the API tests cannot start, because Smart App Control blocks Prisma's unsigned migration helper (`schema-engine-windows.exe`). Lint, type check, the web tests and the Docker stack work there. See the README, "Running the tests".
+- **GitHub Actions, partly:** all CI runs on 2026-10-19 passed, and the last one on `main` (run 6) passed all four jobs: checks, end-to-end tests, the Docker stack and the dependency audit. What has **not** been seen is a deliberately failing check turning a run red (the last acceptance criterion of S2-4).
 - A real **HTTPS** deployment, browsers other than Chromium, load behaviour, and third-party penetration testing.
 
 ## 7. Problems found and fixed during the build

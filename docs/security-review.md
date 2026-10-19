@@ -90,6 +90,6 @@ The clean-clone run found finding 6 above, which is fixed. The one difference fr
 ## 7. Not checked
 
 - **Windows and Docker Desktop.** Everything here ran on Linux with Docker 29.8.2 and Compose v5.6.0. The author's machine (Windows, Docker 29.8.1, Compose v5.5.1) should behave the same but was not used for these results.
-- **GitHub Actions.** The workflow was checked with `actionlint` (no problems), and every command in it was run locally. It has not yet been run on GitHub; the first run on the repository is the check (S2-4's acceptance criteria ask for a green run, and a deliberately failing check turning it red).
+- **GitHub Actions.** The workflow passed in every run on 2026-10-19, including all four jobs on `main` after PR #39. A deliberately failing check turning a run red has not been observed yet.
 - **HTTPS and `Secure` cookies.** The `Secure` flag is covered by a test with a simulated HTTPS proxy header, not by a real HTTPS deployment.
 - **Load and denial of service**, penetration testing by a third party, and browsers other than Chromium.
