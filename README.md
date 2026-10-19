@@ -2,7 +2,7 @@
 
 A lightweight social media MVP: register, log in, post short text messages, and read a shared feed (newest first).
 
-> **Status:** planning is complete (Stages 0 and 1), and the application is being built in stages. Stage 2 (scaffolding and CI) is under way. **Only a skeleton of the API exists so far**: it answers a health check and nothing else. The web app, database and Docker setup are still to come. Run instructions are added only for files that exist.
+> **Status:** planning is complete (Stages 0 and 1), and the application is being built in stages. Stage 2 (scaffolding and CI) is under way. **Only skeletons of the API and the web app exist so far**: the API answers a health check, and the web page shows whether it can reach the API. The database and Docker setup are still to come. Run instructions are added only for files that exist.
 
 ## Documentation
 
@@ -35,7 +35,7 @@ The project was set up with Node 24.21.0, npm 11.19.0, Docker 29.8.1, Docker Com
 ## Repository layout
 
 ```
-apps/web/      React frontend (not started)
+apps/web/      React frontend (a page that shows the API status so far)
 apps/api/      Express REST API (health check only so far)
 docs/          Requirements, architecture, ADRs, workflow
 .github/       CI workflows and issue/PR templates
@@ -51,6 +51,8 @@ Copy the example file and edit it. Never commit `.env`.
 cp .env.example .env
 ```
 
+The web app reads the same `.env` file. `VITE_API_URL=/api` makes the browser call `/api` on its own address, and the Vite dev server forwards that to the API (ADR-0006). If your `.env` has an older `VITE_API_URL=http://localhost:4000`, change it to `/api`.
+
 ## Development
 
 Use Node 24 (see `.nvmrc`). Other major versions are refused on purpose.
@@ -59,9 +61,10 @@ Use Node 24 (see `.nvmrc`). Other major versions are refused on purpose.
 npm ci                     # install exactly what package-lock.json lists
 npm run check              # lint, format check, type check, tests and build
 npm run dev -w apps/api    # start the API with auto-reload
+npm run dev -w apps/web    # start the web app (run it in a second terminal)
 ```
 
-With the API running, open http://127.0.0.1:4000/api/health. It should show `{"status":"ok"}`. The health check does not look at the database yet.
+With the API running, open http://127.0.0.1:4000/api/health. It should show `{"status":"ok"}`. The health check does not look at the database yet. With both running, open http://localhost:5173. The page should say `API status: ok`.
 
 | Command | What it does |
 |---|---|
@@ -72,6 +75,7 @@ With the API running, open http://127.0.0.1:4000/api/health. It should show `{"s
 | `npm run build` | Build every app |
 | `npm run check` | All of the above, in order |
 | `npm run dev -w apps/api` | Start the API with auto-reload |
+| `npm run dev -w apps/web` | Start the web app on http://localhost:5173 |
 | `npm run build -w apps/api` then `npm start -w apps/api` | Run the built API |
 
 Messages you may see and can ignore:
