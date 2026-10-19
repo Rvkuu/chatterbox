@@ -2,7 +2,7 @@
 
 A lightweight social media MVP: register, log in, post short text messages, and read a shared feed (newest first).
 
-> **Status:** planning, the application and the Docker setup are built (Stages 0 to 6). Stage 7 (end-to-end tests, the security and dependency review, the demo script and release notes) is still to come.
+> **Status:** all stages (0 to 7) are built. What was verified, with the actual results, and what has **not** been verified yet (notably a run of the GitHub Actions workflow on GitHub, and a run on Windows) are in the [release notes](docs/release-notes.md). The [demo script](docs/demo-script.md) is a ten-minute walk through the whole application.
 
 ## Documentation
 
@@ -151,11 +151,13 @@ npm run check      # lint, format check, type check, tests and build
 
 The tests use their own database, `chatterbox_test`, on the same PostgreSQL. It is created and migrated automatically from the real migrations, and its tables are emptied between tests, so your development data is never touched. Its address is `TEST_DATABASE_URL` in `.env`, and the database name must end in `_test`. In CI the same variable points at the workflow's PostgreSQL service.
 
+The end-to-end tests drive a real browser against the Docker stack. See [End-to-end tests](#end-to-end-tests).
+
 ### Commands
 
 | Command | What it does |
 |---|---|
-| `npm run lint` | ESLint over the whole repository |
+| `npm run lint` | ESLint over the whole repository (it generates the Prisma client first, which the type-aware rules need) |
 | `npm run format` / `npm run format:check` | Prettier: fix files / only check them |
 | `npm run typecheck` | TypeScript type check in every app |
 | `npm test` | Run the tests in every app (needs `npm run db:up`) |
@@ -165,10 +167,23 @@ The tests use their own database, `chatterbox_test`, on the same PostgreSQL. It 
 | `npm run db:migrate -w apps/api` | Apply the migrations to the database in `DATABASE_URL` |
 | `npm run dev -w apps/api` / `npm run dev -w apps/web` | Start the API / the web app with auto-reload |
 | `npm run build -w apps/api` then `npm start -w apps/api` | Run the built API |
+| `npm run e2e -w apps/e2e` | Run the end-to-end tests (see below) |
 
 Messages you may see and can ignore:
 - `npm warn install-scripts ...`: newer npm versions list dependency install scripts that are not approved yet. The scripts still run.
 - `../../.env not found. Continuing without it.`: you have not created a `.env` file.
+
+## End-to-end tests
+
+They start their own copy of the stack under a separate Compose project name (`chatterbox-e2e`), on their own port and with their own database volume, so they can never touch your data. They register, log in, post, log out, check that protected actions are refused, restart the containers and check that the data is still there. Run them from the repository root:
+
+```bash
+npm ci
+npx playwright install chromium          # once: downloads the browser the tests drive
+npm run e2e -w apps/e2e
+```
+
+Docker Desktop must be running. The first run builds the images. The tests remove their own stack and volume when they finish.
 
 ## Configuration
 
@@ -193,7 +208,8 @@ All configuration comes from environment variables. `.env` is read by Docker Com
 ```
 apps/web/            React frontend (feed, composer, register, login, logout)
 apps/api/            Express REST API (health, sessions, register, login, logout, posts)
-docs/                Requirements, architecture, ADRs, workflow
+apps/e2e/            End-to-end tests (Playwright, against the Docker stack)
+docs/                Requirements, architecture, ADRs, workflow, release notes, demo script
 .github/             CI workflow and issue/PR templates
 docker-compose.yml   The web, api and database containers
 package.json         npm workspaces and the shared scripts
@@ -219,7 +235,7 @@ The full list is in [docs/requirements.md](docs/requirements.md) section 8 and [
 | 4 | Authentication | Done |
 | 5 | Post creation and feed | Done |
 | 6 | Docker integration and persistence | Done |
-| 7 | QA, security review and release | Planned |
+| 7 | QA, security review and release | Done (open items are listed in the release notes) |
 
 ## Contributing
 

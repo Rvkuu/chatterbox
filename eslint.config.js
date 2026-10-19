@@ -58,6 +58,7 @@ export default defineConfig([
             '**/src/test/**',
             '**/vitest.config.ts',
             '**/prisma.config.ts',
+            'apps/e2e/**',
             '**/vite.config.ts',
             '**/eslint.config.js',
           ],

@@ -147,7 +147,7 @@ Deferred to the stage that has the information to decide:
 | Decision | Stage |
 |---|---|
 | Exact folder layout of both apps | 2 |
-| End-to-end test tool | 7 (S7-1) |
+| End-to-end test tool | 7 (S7-1). Decided: Playwright, see [ADR-0011](adr/0011-playwright-end-to-end-tests.md) |
 | Session pruning interval | 3 (S3-2) |
 | Whether migrations run automatically on start or by one documented command | 6 (S6-1) |
 | Content Security Policy details | 6 |

@@ -34,6 +34,9 @@ jobs:
       TEST_DATABASE_URL: postgresql://ci:ci-only-password@localhost:5432/chatterbox_test
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The secrets check also searches the Git history.
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
@@ -47,6 +50,30 @@ jobs:
       - name: Tests again (repeatability)
         run: npm test
       - run: npm run build
+      # Every acceptance scenario has a test, no secrets are committed, and the configuration
+      # is documented and not hard-coded (NC6, NC8, SEC-T14).
+      - run: npm run verify:ci
+
+  e2e:
+    name: End-to-end tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # The tests start and remove their own private Docker stack (apps/e2e/tests/stack.ts).
+      - run: npm run e2e -w apps/e2e
+      - name: Keep the Playwright traces if a test failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-traces
+          path: apps/e2e/test-results
+          if-no-files-found: ignore
 
   docker:
     name: Docker Compose stack starts

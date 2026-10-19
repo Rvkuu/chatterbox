@@ -11,15 +11,18 @@
     "node": ">=24 <25"
   },
   "scripts": {
+    "prelint": "npm run db:generate -w apps/api",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
-    "check": "npm run lint && npm run format:check && npm run typecheck && npm test && npm run build",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm test && npm run build && npm run verify",
     "db:up": "docker compose -f docker-compose.yml -f docker-compose.debug.yml up -d --wait db",
-    "db:down": "docker compose -f docker-compose.yml -f docker-compose.debug.yml stop db"
+    "db:down": "docker compose -f docker-compose.yml -f docker-compose.debug.yml stop db",
+    "verify": "node scripts/check-traceability.mjs && node scripts/check-secrets.mjs && node scripts/check-config.mjs",
+    "verify:ci": "node scripts/check-traceability.mjs && node scripts/check-secrets.mjs --history && node scripts/check-config.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

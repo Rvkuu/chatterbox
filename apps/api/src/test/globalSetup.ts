@@ -24,9 +24,21 @@ export function setup(): void {
     throw new Error('TEST_DATABASE_URL must name a database that ends in "_test".');
   }
 
-  execFileSync('npx', ['prisma', 'migrate', 'deploy'], {
-    cwd: apiDir,
-    env: { ...process.env, DATABASE_URL: url },
-    stdio: 'pipe',
-  });
+  try {
+    execFileSync('npx', ['prisma', 'migrate', 'deploy'], {
+      cwd: apiDir,
+      env: { ...process.env, DATABASE_URL: url },
+      stdio: 'pipe',
+      encoding: 'utf8',
+    });
+  } catch (err) {
+    // Say what to do in one plain message. The connection string is not printed, because it
+    // contains the password.
+    const { hostname, port } = new URL(url);
+    throw new Error(
+      `Could not prepare the test database at ${hostname}:${port}. Is PostgreSQL running? ` +
+        'Start it with "npm run db:up" (see "Running the tests" in the README).',
+      { cause: err },
+    );
+  }
 }

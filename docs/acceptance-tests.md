@@ -1,6 +1,6 @@
 # Chatterbox Acceptance Tests
 
-Status: Draft for review · Defines **what must be true** for each requirement in [requirements.md](requirements.md). Nothing in this document has been implemented or run yet. Every scenario below is planned work.
+Status: Implemented · Defines **what must be true** for each requirement in [requirements.md](requirements.md). Every scenario has an automated test (or, for layer R, a documented review) in the layers listed below, and `npm run verify` checks that none is missing. The results of actual runs are in [release-notes.md](release-notes.md).
 
 ## 1. Purpose and how to read this
 
