@@ -2,7 +2,7 @@
 
 A lightweight social media MVP: register, log in, post short text messages, and read a shared feed (newest first).
 
-> **Status:** planning is complete (Stages 0 and 1), and the application is being built in stages. Stage 2 (scaffolding and CI) is under way. **Only skeletons of the API and the web app exist so far**: the API answers a health check, and the web page shows whether it can reach the API. The database and Docker setup are still to come. Run instructions are added only for files that exist.
+> **Status:** planning is complete (Stages 0 and 1), and the application is being built in stages. Stage 2 (scaffolding and CI) is under way. **Only skeletons of the API and the web app exist so far**: the API answers a health check, and the web page shows whether it can reach the API. Docker Compose starts both together with an empty database, which the API does not use yet. Run instructions are added only for files that exist.
 
 ## Documentation
 
@@ -35,12 +35,13 @@ The project was set up with Node 24.21.0, npm 11.19.0, Docker 29.8.1, Docker Com
 ## Repository layout
 
 ```
-apps/web/      React frontend (a page that shows the API status so far)
-apps/api/      Express REST API (health check only so far)
-docs/          Requirements, architecture, ADRs, workflow
-.github/       CI workflows and issue/PR templates
-package.json   npm workspaces and the shared scripts
-.nvmrc         The Node.js version (24)
+apps/web/            React frontend (a page that shows the API status so far)
+apps/api/            Express REST API (health check only so far)
+docs/                Requirements, architecture, ADRs, workflow
+.github/             CI workflows and issue/PR templates
+docker-compose.yml   The web, api and database containers
+package.json         npm workspaces and the shared scripts
+.nvmrc               The Node.js version (24)
 ```
 
 ## Configuration
@@ -77,10 +78,32 @@ With the API running, open http://127.0.0.1:4000/api/health. It should show `{"s
 | `npm run dev -w apps/api` | Start the API with auto-reload |
 | `npm run dev -w apps/web` | Start the web app on http://localhost:5173 |
 | `npm run build -w apps/api` then `npm start -w apps/api` | Run the built API |
+| `docker compose up --build` | Build and start web, api and the database |
+| `docker compose down` | Stop the containers. The database data is kept |
+| `docker compose down -v` | Stop the containers and delete the database data |
 
 Messages you may see and can ignore:
 - `npm warn install-scripts ...`: newer npm versions list dependency install scripts that are not approved yet. The scripts still run.
 - `../../.env not found. Continuing without it.`: you have not created a `.env` file. The defaults work.
+
+## Running with Docker
+
+This starts the whole stack: the web app, the API and PostgreSQL. Docker Desktop must be running.
+
+```bash
+cp .env.example .env        # once. Docker Compose refuses to start without it
+docker compose up --build
+```
+
+Open http://localhost:8080. The page should say `API status: ok`. Press Ctrl+C to stop, or run `docker compose down` in another terminal.
+
+- Only the web app is published to your machine (port 8080, or `WEB_PORT` in `.env`). It also forwards `/api` to the API, so the browser sees one address (ADR-0006). The API and the database are reachable only from inside Docker.
+- The services start in order: the database reports healthy, then the API, then the web app.
+- The database files live in a named volume, so they survive `docker compose down`. `docker compose down -v` deletes them.
+- Compose builds the images from the repository root and reads every setting from `.env`. If you change a password after the database has been created once, run `docker compose down -v` so the database is created again with the new value.
+- The API does not use the database yet. That arrives in Stage 3. Compose already starts it so that the setup is in place.
+- In Docker the API runs with `NODE_ENV=production`, whatever `.env` says.
+- The first build downloads the Node, PostgreSQL and nginx images and can take a few minutes.
 
 ## Progress
 
