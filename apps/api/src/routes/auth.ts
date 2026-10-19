@@ -2,7 +2,7 @@ import { Router } from 'express';
 import type { Config } from '../config.js';
 import { unauthenticated } from '../errors.js';
 import { requireAuth } from '../middleware/auth.js';
-import { newCsrfToken } from '../middleware/csrf.js';
+import { csrfProtection, newCsrfToken } from '../middleware/csrf.js';
 import { noStore } from '../middleware/noStore.js';
 import {
   destroySession,
@@ -17,6 +17,8 @@ import { loginSchema, parseBody, registerSchema } from '../validation/schemas.js
 export function authRouter(config: Config, service: AuthService): Router {
   const router = Router();
   router.use(noStore);
+  // Every state-changing route here starts with the CSRF checks (docs/security.md section 6).
+  router.use(csrfProtection(config));
 
   // Creates the account only. The caller then logs in, so registering never changes the session
   // (docs/api.md decision D7, AT-R9).

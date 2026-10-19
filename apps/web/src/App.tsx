@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { ApiStatus } from './components/ApiStatus';
+import { Feed } from './components/Feed';
 import { Header } from './components/Header';
 import { LoginForm } from './components/LoginForm';
 import { RegisterForm } from './components/RegisterForm';
@@ -46,7 +47,15 @@ function Shell() {
             onShowLogin={showLogin}
           />
         ) : null}
-        {current === 'home' ? <p>Posts will appear here.</p> : null}
+        {current === 'home' ? (
+          <Feed
+            onSessionExpired={() => {
+              // The server no longer knows this session (it expired), so ask the user to log in.
+              setNotice('Your session has expired. Please log in again.');
+              setView('login');
+            }}
+          />
+        ) : null}
       </main>
       <footer>
         <ApiStatus />

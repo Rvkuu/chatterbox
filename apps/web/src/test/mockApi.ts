@@ -39,6 +39,7 @@ export function mockApi(routes: Record<string, Handler | Reply> = {}) {
 
   const defaults: Record<string, Handler | Reply> = {
     'GET /health': json(200, { status: 'ok', database: 'up' }),
+    'GET /posts': json(200, { posts: [] }),
     'GET /csrf-token': () => json(200, { csrfToken: `token-${++tokens}` }),
   };
 
@@ -81,5 +82,14 @@ export function mockApi(routes: Record<string, Handler | Reply> = {}) {
 export const anonymous: Record<string, Reply> = {
   'GET /auth/me': apiError(401, 'UNAUTHENTICATED', 'You need to log in.'),
 };
+
+export function post(
+  id: string,
+  content: string,
+  username = 'ada_l',
+  createdAt = '2026-10-16T12:00:00.000Z',
+) {
+  return { id, content, createdAt, author: { id: `u-${username}`, username } };
+}
 
 export const ADA = { id: 'u1', username: 'ada_l', createdAt: '2026-10-16T11:19:54.000Z' };

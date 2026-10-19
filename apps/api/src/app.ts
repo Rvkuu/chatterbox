@@ -4,15 +4,17 @@ import type { Pool } from 'pg';
 import type { Config } from './config.js';
 import type { Db } from './db.js';
 import { consoleLogger, type Logger } from './logger.js';
-import { csrfProtection, requireJson } from './middleware/csrf.js';
+import { requireJson } from './middleware/csrf.js';
 import { createErrorHandler, notFoundHandler } from './middleware/errors.js';
 import { requestLogger } from './middleware/logging.js';
 import { createSessionMiddleware } from './middleware/session.js';
 import { createAuthService } from './services/auth.js';
+import { createPostsService } from './services/posts.js';
 import { createPasswordHasher, type PasswordHasher } from './services/passwords.js';
 import { authRouter } from './routes/auth.js';
 import { csrfRouter } from './routes/csrf.js';
 import { healthRouter } from './routes/health.js';
+import { postsRouter } from './routes/posts.js';
 
 export interface AppDeps {
   config: Config;
@@ -59,10 +61,13 @@ export function createApp({
   api.use(requireJson);
   api.use(express.json({ limit: '10kb' }));
   api.use(createSessionMiddleware(config, pool));
-  api.use(csrfProtection(config));
 
+  // CSRF checks are applied inside each router that has state-changing routes (csrfProtection),
+  // so that a route can put authentication first. Every new POST route must do the same; the
+  // test 'extra: every state-changing endpoint refuses a request without a CSRF token' checks it.
   api.use('/csrf-token', csrfRouter);
   api.use('/auth', authRouter(config, createAuthService(db, hasher)));
+  api.use('/posts', postsRouter(config, createPostsService(db)));
   app.use('/api', api);
 
   app.use(notFoundHandler);
